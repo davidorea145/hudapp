@@ -42,6 +42,7 @@ export default function StaticTest() {
   const [recording, setRecording] = useState(false);
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isStandalone, setIsStandalone] = useState(false);
+  const [installHelpOpen, setInstallHelpOpen] = useState(false);
 
   const rxCharRef = useRef<any>(null);
   const deviceRef = useRef<any>(null);
@@ -249,7 +250,10 @@ export default function StaticTest() {
   };
 
   const installApp = async () => {
-    if (!installPrompt) return;
+    if (!installPrompt) {
+      setInstallHelpOpen(true);
+      return;
+    }
     await installPrompt.prompt();
     await installPrompt.userChoice.catch(() => undefined);
     setInstallPrompt(null);
@@ -421,7 +425,7 @@ export default function StaticTest() {
             </div>
 
             <div className="grid grid-cols-2" style={{ gap: 20, marginTop: 32 }}>
-              {installPrompt && !isStandalone && (
+              {!isStandalone && (
                 <button
                   onClick={installApp}
                   className="hud-text bg-hud-white text-black font-bold active:scale-95 col-span-2"
@@ -474,6 +478,30 @@ export default function StaticTest() {
         </div>
       )}
 
+
+      {/* Install fallback modal */}
+      {installHelpOpen && (
+        <div className="absolute inset-0 bg-black/95 z-[70] flex items-center justify-center pointer-events-auto" style={{ padding: 40 }}>
+          <div className="bg-card border-2 border-hud-red hud-glow" style={{ width: 920, maxWidth: "92%", padding: 40 }}>
+            <h2 className="hud-text text-hud-white font-bold text-center" style={{ fontSize: 42, marginBottom: 24, letterSpacing: "0.12em" }}>INSTALAR HUDAPP</h2>
+            <p className="hud-text text-hud-white/85 leading-relaxed" style={{ fontSize: 24, marginBottom: 24 }}>
+              NO CHROME ANDROID, TOQUE EM<br />
+              ADICIONAR A TELA INICIAL<br />
+              E CONFIRME ADICIONAR OU INSTALAR.
+            </p>
+            <p className="hud-text text-hud-white/60 leading-relaxed" style={{ fontSize: 20, marginBottom: 28 }}>
+              SE O ATALHO JA EXISTIR, REMOVA O ICONE ANTIGO DA TELA INICIAL E ADICIONE NOVAMENTE.
+            </p>
+            <button
+              onClick={() => setInstallHelpOpen(false)}
+              className="w-full hud-text bg-hud-white text-black font-bold active:scale-95"
+              style={{ padding: "18px 0", fontSize: 26 }}
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Calibration modal */}
       {calibOpen && (

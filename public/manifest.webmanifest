@@ -5,11 +5,12 @@
   "description": "Bancada de teste estatico com HUD, Bluetooth ESP32 e celula de carga HX711.",
   "start_url": "/?source=pwa",
   "scope": "/",
-  "display": "fullscreen",
-  "display_override": ["fullscreen", "standalone", "minimal-ui"],
+  "display": "standalone",
+  "display_override": ["standalone", "fullscreen", "minimal-ui"],
   "orientation": "landscape",
   "background_color": "#050505",
   "theme_color": "#050505",
+  "prefer_related_applications": false,
   "categories": ["utilities", "productivity"],
   "icons": [
     {
