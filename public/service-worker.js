@@ -1,6 +1,7 @@
-const CACHE_NAME = "hudapp-v1";
+const CACHE_NAME = "hudapp-v2";
 const APP_SHELL = [
   "/",
+  "/manifest.json",
   "/manifest.webmanifest",
   "/icons/icon-192.png",
   "/icons/icon-512.png",
