@@ -78,7 +78,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^15.15.0",
-    "nitro": "3.0.260429-beta",
+    "nitro": "^3.0.260603-beta",
     "node-forge": "^1.4.0",
     "prettier": "^3.7.3",
     "selfsigned": "^5.5.0",
