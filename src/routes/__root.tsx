@@ -12,6 +12,9 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
+const APP_NAME = "HudApp Static Test";
+const APP_DESCRIPTION = "Bancada de teste estatico com HUD, Bluetooth ESP32 e celula de carga HX711.";
+
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -76,21 +79,30 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Rocket Fuel Monitor tracks rocket engine burn time and maximum power." },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Rocket Fuel Monitor tracks rocket engine burn time and maximum power." },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+      { title: APP_NAME },
+      { name: "description", content: APP_DESCRIPTION },
+      { name: "author", content: "HudApp" },
+      { name: "application-name", content: APP_NAME },
+      { name: "theme-color", content: "#050505" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-title", content: "HudApp" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
+      { property: "og:title", content: APP_NAME },
+      { property: "og:description", content: APP_DESCRIPTION },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "Lovable App" },
-      { name: "twitter:description", content: "Rocket Fuel Monitor tracks rocket engine burn time and maximum power." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/fafe4d4f-b693-41f9-ac16-126fe59c0e27/id-preview-eee52e01--12c7d042-96ee-46bd-8099-78a3290684a0.lovable.app-1780681624382.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/fafe4d4f-b693-41f9-ac16-126fe59c0e27/id-preview-eee52e01--12c7d042-96ee-46bd-8099-78a3290684a0.lovable.app-1780681624382.png" },
+      { name: "twitter:title", content: APP_NAME },
+      { name: "twitter:description", content: APP_DESCRIPTION },
+      { property: "og:image", content: "/screenshots/hudapp-wide.png" },
+      { name: "twitter:image", content: "/screenshots/hudapp-wide.png" },
     ],
     links: [
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "icon", href: "/icons/icon-192.png", type: "image/png", sizes: "192x192" },
+      { rel: "icon", href: "/icons/icon-512.png", type: "image/png", sizes: "512x512" },
+      { rel: "apple-touch-icon", href: "/icons/apple-touch-icon.png", sizes: "180x180" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;700&display=swap" },
@@ -122,6 +134,24 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    if (!("serviceWorker" in navigator)) return;
+
+    const registerServiceWorker = () => {
+      navigator.serviceWorker.register("/service-worker.js").catch((error) => {
+        console.warn("service worker registration failed", error);
+      });
+    };
+
+    if (document.readyState === "complete") {
+      registerServiceWorker();
+      return;
+    }
+
+    window.addEventListener("load", registerServiceWorker);
+    return () => window.removeEventListener("load", registerServiceWorker);
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

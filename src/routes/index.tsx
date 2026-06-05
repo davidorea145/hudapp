@@ -7,7 +7,7 @@ export const Route = createFileRoute("/")({
     meta: [
       { title: "Static Test HUD" },
       { name: "description", content: "Bancada de teste estático com HUD, Bluetooth ESP32 e célula de carga HX711." },
-      { name: "viewport", content: "width=1920, user-scalable=no" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" },
       { property: "og:title", content: "Static Test HUD" },
       { property: "og:description", content: "Bancada de teste estático com HUD, Bluetooth ESP32 e célula de carga HX711." },
     ],

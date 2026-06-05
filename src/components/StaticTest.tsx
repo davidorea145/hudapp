@@ -15,6 +15,11 @@ interface Settings {
   cameraFacing: CameraFacing;
 }
 
+type BeforeInstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
+};
+
 const DEFAULT_SETTINGS: Settings = {
   countdownSeconds: 10,
   autoIgnition: false,
@@ -35,6 +40,8 @@ export default function StaticTest() {
   const [burnTime, setBurnTime] = useState(0);
   const [btStatus, setBtStatus] = useState<"disconnected" | "connecting" | "connected">("disconnected");
   const [recording, setRecording] = useState(false);
+  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [isStandalone, setIsStandalone] = useState(false);
 
   const rxCharRef = useRef<any>(null);
   const deviceRef = useRef<any>(null);
@@ -44,6 +51,30 @@ export default function StaticTest() {
   const streamRef = useRef<MediaStream | null>(null);
 
   const MAX_POWER = 10000;
+
+  useEffect(() => {
+    const standalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (navigator as any).standalone === true;
+    setIsStandalone(standalone);
+
+    const handleBeforeInstallPrompt = (event: Event) => {
+      event.preventDefault();
+      setInstallPrompt(event as BeforeInstallPromptEvent);
+    };
+
+    const handleAppInstalled = () => {
+      setInstallPrompt(null);
+      setIsStandalone(true);
+    };
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", handleAppInstalled);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener("appinstalled", handleAppInstalled);
+    };
+  }, []);
 
   // start / restart camera when facing changes
   useEffect(() => {
@@ -217,6 +248,13 @@ export default function StaticTest() {
     }
   };
 
+  const installApp = async () => {
+    if (!installPrompt) return;
+    await installPrompt.prompt();
+    await installPrompt.userChoice.catch(() => undefined);
+    setInstallPrompt(null);
+  };
+
   const startCalibration = async () => {
     // Two-step: TARE empty, then send known weight
     await sendBT("TARE");
@@ -383,6 +421,15 @@ export default function StaticTest() {
             </div>
 
             <div className="grid grid-cols-2" style={{ gap: 20, marginTop: 32 }}>
+              {installPrompt && !isStandalone && (
+                <button
+                  onClick={installApp}
+                  className="hud-text bg-hud-white text-black font-bold active:scale-95 col-span-2"
+                  style={{ padding: "18px 0", fontSize: 24 }}
+                >
+                  INSTALAR APP
+                </button>
+              )}
               <button
                 onClick={connectBT}
                 className="hud-text bg-hud-red text-hud-white font-bold hud-glow active:scale-95"
