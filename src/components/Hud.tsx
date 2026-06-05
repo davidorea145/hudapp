@@ -51,25 +51,15 @@ interface PowerGaugeProps {
   max: number;
 }
 
-export function PowerGauge({ value, max }: PowerGaugeProps) {
-  const pct = Math.max(0, Math.min(1, value / max));
+export function PowerGauge({ value }: PowerGaugeProps) {
   const cx = 200;
   const cy = 130;
   const rx = 180; // wider
   const ry = 110; // flatter
-  const clipId = "gauge-fill-clip";
-  const fillHeight = pct * ry;
-  const fillY = cy - fillHeight;
 
   return (
     <div className="relative w-full mx-auto pointer-events-none" style={{ maxWidth: 900 }}>
       <svg viewBox="0 0 400 140" className="w-full">
-
-        <defs>
-          <clipPath id={clipId}>
-            <path d={`M ${cx - rx} ${cy} A ${rx} ${ry} 0 0 1 ${cx + rx} ${cy} Z`} />
-          </clipPath>
-        </defs>
         {/* dome body */}
         <path
           d={`M ${cx - rx} ${cy} A ${rx} ${ry} 0 0 1 ${cx + rx} ${cy} Z`}
@@ -77,17 +67,6 @@ export function PowerGauge({ value, max }: PowerGaugeProps) {
           stroke="var(--hud-red)"
           strokeWidth="2"
         />
-        {pct > 0.001 && (
-          <rect
-            x={cx - rx}
-            y={fillY}
-            width={rx * 2}
-            height={fillHeight}
-            fill="var(--hud-white)"
-            opacity="0.85"
-            clipPath={`url(#${clipId})`}
-          />
-        )}
         {/* inner highlight */}
         <path
           d={`M ${cx - rx + 10} ${cy} A ${rx - 10} ${ry - 8} 0 0 1 ${cx + rx - 10} ${cy}`}
