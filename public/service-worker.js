@@ -1,4 +1,4 @@
-const CACHE_NAME = "hudapp-v3";
+const CACHE_NAME = "hudapp-v4";
 const APP_SHELL = [
   "/",
   "/manifest.json",
@@ -18,16 +18,6 @@ async function cachePut(request, response) {
   await cache.put(request, response.clone());
 }
 
-async function revalidate(request, cacheKey = request) {
-  try {
-    const response = await fetch(request);
-    await cachePut(cacheKey, response);
-    return response;
-  } catch {
-    return undefined;
-  }
-}
-
 async function cacheFirst(request) {
   const cached = await caches.match(request);
   if (cached) return cached;
@@ -39,10 +29,7 @@ async function cacheFirst(request) {
 
 async function appShellFirst(request) {
   const cachedShell = await caches.match("/");
-  if (cachedShell) {
-    revalidate(request, "/");
-    return cachedShell;
-  }
+  if (cachedShell) return cachedShell;
 
   const response = await fetch(request);
   await cachePut("/", response);

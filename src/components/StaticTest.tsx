@@ -259,6 +259,30 @@ export default function StaticTest() {
     setInstallPrompt(null);
   };
 
+  const updateApp = async () => {
+    const confirmed = window.confirm(
+      "Atualizar agora? Isso vai buscar a versao mais recente pela internet e reiniciar o app.",
+    );
+    if (!confirmed) return;
+
+    try {
+      const registrations = await navigator.serviceWorker?.getRegistrations?.();
+      await Promise.all((registrations ?? []).map((registration) => registration.unregister()));
+
+      if ("caches" in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map((key) => caches.delete(key)));
+      }
+
+      const url = new URL(window.location.href);
+      url.searchParams.set("update", Date.now().toString());
+      window.location.replace(url.toString());
+    } catch (error) {
+      console.warn("app update failed", error);
+      window.location.reload();
+    }
+  };
+
   const startCalibration = async () => {
     // Two-step: TARE empty, then send known weight
     await sendBT("TARE");
@@ -434,6 +458,13 @@ export default function StaticTest() {
                   INSTALAR APP
                 </button>
               )}
+              <button
+                onClick={updateApp}
+                className="hud-text border border-hud-red text-hud-white active:scale-95 col-span-2"
+                style={{ padding: "16px 0", fontSize: 22 }}
+              >
+                ATUALIZAR APP
+              </button>
               <button
                 onClick={connectBT}
                 className="hud-text bg-hud-red text-hud-white font-bold hud-glow active:scale-95"
