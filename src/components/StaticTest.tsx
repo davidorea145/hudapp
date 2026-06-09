@@ -194,12 +194,17 @@ export default function StaticTest() {
     setCountdown(settings.countdownSeconds);
   };
 
+  const endTest = () => {
+    setCountdown(null);
+    setRunning(false);
+    burnStartRef.current = null;
+  };
+
   useEffect(() => {
     if (countdown === null) return;
     if (countdown <= 0) {
       setCountdown(null);
       if (settings.autoIgnition) sendBT("FIRE");
-      setTimeout(() => setRunning(false), 1000);
       return;
     }
     const t = setTimeout(() => setCountdown((c) => (c ?? 1) - 1), 1000);
@@ -320,7 +325,7 @@ export default function StaticTest() {
         )}
       </div>
 
-      {(running || countdown !== null) && (
+      {countdown !== null && (
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 hud-glow">
           <svg width="240" height="220" viewBox="0 0 120 110">
             <polygon points="60,8 112,100 8,100" fill="none" stroke="var(--hud-red)" strokeWidth="5" />
@@ -350,6 +355,18 @@ export default function StaticTest() {
             style={{ clipPath: "polygon(8% 0, 100% 0, 92% 100%, 0 100%)", padding: "28px 72px", fontSize: 56, marginLeft: -24 }}
           >
             START
+          </button>
+        </div>
+      )}
+
+      {running && countdown === null && (
+        <div className="absolute pointer-events-auto" style={{ top: 16, left: 16 }}>
+          <button
+            onClick={endTest}
+            className="hud-text bg-black/70 border border-hud-red text-hud-white active:scale-95"
+            style={{ padding: "10px 18px", fontSize: 20 }}
+          >
+            ENCERRAR TESTE
           </button>
         </div>
       )}
