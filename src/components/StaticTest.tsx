@@ -200,6 +200,13 @@ export default function StaticTest() {
     burnStartRef.current = null;
   };
 
+  const resetTestStats = () => {
+    setMaxPower(0);
+    setBurnTime(0);
+    burnStartRef.current = null;
+    lastPowerRef.current = power;
+  };
+
   useEffect(() => {
     if (countdown === null) return;
     if (countdown <= 0) {
@@ -289,9 +296,6 @@ export default function StaticTest() {
   };
 
   const startCalibration = async () => {
-    // Two-step: TARE empty, then send known weight
-    await sendBT("TARE");
-    await new Promise((r) => setTimeout(r, 1500));
     await sendBT(`CAL:${calibWeight}`);
     await new Promise((r) => setTimeout(r, 800));
     await sendBT("SAVE");
@@ -512,6 +516,13 @@ export default function StaticTest() {
                 style={{ padding: "16px 0", fontSize: 22 }}
               >
                 CALIBRAR BALANÇA
+              </button>
+              <button
+                onClick={resetTestStats}
+                className="hud-text border border-hud-red text-hud-white active:scale-95 col-span-2"
+                style={{ padding: "16px 0", fontSize: 22 }}
+              >
+                RESETAR TEMPO/POTENCIA MAX
               </button>
             </div>
 
